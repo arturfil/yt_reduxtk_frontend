@@ -1,25 +1,30 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import GamesPage from './features/games/GamesPage';
+import { getGames } from './features/games/gameSlice';
+import { useAppDispatch } from './store/store';
+import NavBar from './components/NavBar';
 
 function App() {
+  const dispatch = useAppDispatch();
+
+  const initApp = useCallback(async () => {
+    await dispatch(getGames());
+  }, [dispatch]);
+
+  useEffect(() => {
+    initApp();
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <NavBar/>
+      <Routes>
+        <Route path="/" element={<GamesPage/>} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
