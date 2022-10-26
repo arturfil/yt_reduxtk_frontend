@@ -29,7 +29,19 @@ export const getGames = createAsyncThunk<Game[]>(
     }
 );
 
-export const createGame = createAsyncThunk<Object, Game>(
+export const getGameById = createAsyncThunk<Game, string>(
+    "games/getGameById",
+    async (id, thunkAPI) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/games/game/${id}`)
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error);
+        }
+    }
+)
+
+export const createGame = createAsyncThunk<Game, Object>(
     "games/createGame",
     async (data, thunkAPI) => {
         try {
@@ -42,6 +54,31 @@ export const createGame = createAsyncThunk<Object, Game>(
     }
 )
 
+export const updateGame = createAsyncThunk<Game, Object|any>(
+    "games/updateGame",
+    async (data, thunkAPI) => {
+        try {
+            const response = await axios.put(`http://localhost:8080/api/games/game/${data._id}`, data)
+            return response.data
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error);
+        }
+    }
+)
+
+export const deleteGame = createAsyncThunk<string,string>(
+    "games/deleteGame",
+    async (id, thunkAPI) => {
+        try {
+            const response = await axios.delete(`http://localhost:8080/api/games/game/${id}`);
+            thunkAPI.dispatch(getGames());
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error);
+        }
+    }
+) 
+
 // reducers -> reduce to a specific state -> changes state
 export const gameSlice = createSlice({
     name: "games",
@@ -49,6 +86,9 @@ export const gameSlice = createSlice({
     reducers: {
         setGames: (state, action: PayloadAction<Game[]>) => {
             state.games = action.payload
+        },
+        filterGame: (state, action) => {
+            state.games = state.games?.filter(game => game._id != action.payload)!;
         }
     },
     extraReducers: (builder) => {
@@ -62,9 +102,22 @@ export const gameSlice = createSlice({
         builder.addCase(getGames.rejected, (state, action) => {
             state.loading = false;
             state.errors = action.payload;
-        })
+        });
+        builder.addCase(getGameById.pending, (state) => {
+            state.loading = true;            
+        });
+        builder.addCase(getGameById.fulfilled, (state, action) => {
+            state.singleGame = action.payload;
+            state.loading = false;
+        });
+        builder.addCase(updateGame.fulfilled, (state, action) => { 
+            state.singleGame = action.payload;
+        });
+        // builder.addCase(deleteGame.fulfilled, (state, action) => {
+        //     state.message
+        // })
     }
 })
 
 export default gameSlice.reducer;
-export const { setGames } = gameSlice.actions;
+export const { setGames, filterGame } = gameSlice.actions;
