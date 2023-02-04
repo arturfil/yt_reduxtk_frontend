@@ -88,7 +88,7 @@ export const gameSlice = createSlice({
             state.games = action.payload
         },
         filterGame: (state, action) => {
-            state.games = state.games?.filter(game => game._id != action.payload)!;
+            state.games = state.games?.filter(game => game._id !== action.payload)!;
         }
     },
     extraReducers: (builder) => {

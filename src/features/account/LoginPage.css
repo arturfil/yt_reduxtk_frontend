@@ -1,0 +1,16 @@
+.login-body {
+    background-image: linear-gradient(90deg, rgb(9, 35, 47), rgb(17, 39, 55));
+    height: 100vh;
+    width: 100vw;
+}
+
+.login-container {
+    border-radius: 10px;
+    min-width: 500px;
+    max-width: 900px;
+}
+
+.login-input {
+    background-color: lightgrey!important;
+    border-color: lightgrey!important;
+}

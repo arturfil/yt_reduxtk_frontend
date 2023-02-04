@@ -12,15 +12,20 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { Link } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../store/store';
+import { logOutUser } from '../../features/account/accountSlice';
 
 const pages = [
   {title: 'Home', route: "/"}, 
   {title: 'Games', route: "/games"},
-  {title: 'Add Game', route: "/createGame"}
+  {title: 'Add Game', route: "/createGame"},
+  {title: 'Login', route: "/login"}
 ];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout', 'Login'];
 
 const NavBar = () => {
+  const { isLoggedIn } = useAppSelector(state => state.account);
+  const dispatch = useAppDispatch();
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -81,13 +86,29 @@ const NavBar = () => {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              {pages.map((page) => (
-                <Link to={page.route}>
-                  <MenuItem key={page.route} onClick={handleCloseNavMenu}>
-                    <Typography fontWeight={600} textAlign="center">{page.title}</Typography>
+                <Link to="/">
+                  <MenuItem  onClick={handleCloseNavMenu}>
+                    <Typography fontWeight={600} textAlign="center">Home</Typography>
                   </MenuItem>
                 </Link>
-              ))}
+                {isLoggedIn ? (
+                  <>
+                    <MenuItem  onClick={() => dispatch(logOutUser())}>
+                      <Typography fontWeight={600} textAlign="center">Log Out</Typography>
+                    </MenuItem>
+                    <Link to="/creategame">
+                      <MenuItem  onClick={handleCloseNavMenu}>
+                        <Typography fontWeight={600} textAlign="center">Create Game</Typography>
+                      </MenuItem>
+                    </Link>
+                  </>
+                ) : (
+                  <Link to="/login">
+                    <MenuItem  onClick={handleCloseNavMenu}>
+                      <Typography fontWeight={600} textAlign="center">Login</Typography>
+                    </MenuItem>
+                  </Link>
+                )}
             </Menu>
           </Box>
           <Typography
@@ -99,17 +120,41 @@ const NavBar = () => {
             FutTube
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Link to={page.route}>
+              <Link to="/">
                 <Button
-                  key={page.route}
                   onClick={handleCloseNavMenu}
                   sx={{ my: 2, color: 'white', display: 'block', fontWeight: 600 }}
                 >
-                  {page.title}
+                  Home
                 </Button>
               </Link>
-            ))}
+              {isLoggedIn ? (
+                <>
+                  <Link to="/creategame">
+                    <Button
+                      onClick={handleCloseNavMenu}
+                      sx={{ my: 2, color: 'white', display: 'block', fontWeight: 600 }}
+                    >
+                      Createm Game
+                    </Button>
+                  </Link>
+                  <Button
+                    onClick={() => dispatch(logOutUser())}
+                    sx={{ my: 2, color: 'white', display: 'block', fontWeight: 600 }}
+                  >
+                    Log Out
+                  </Button>
+                </>
+              ) : (
+                <Link to="/login">
+                  <Button
+                    onClick={handleCloseNavMenu}
+                    sx={{ my: 2, color: 'white', display: 'block', fontWeight: 600 }}
+                  >
+                    Login
+                  </Button>
+                </Link>
+              )}
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
